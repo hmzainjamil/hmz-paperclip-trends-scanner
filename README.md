@@ -1,85 +1,103 @@
 # hmz-paperclip-trends-scanner
+> Trend scanning — HackerNews + Bilibili + Reddit → digest → strategy brief. Part of the DigiMinds Paperclip automation engine suite.
 
-> **Autonomous market trends scanner | Mon/Wed/Fri 6:00 AM | keeps DigiMinds ahead of the market**
+[![paperclip](https://img.shields.io/badge/Paperclip-engine-blue?style=flat&labelColor=555)](https://github.com/paperclipai/paperclip)
+[![mae](https://img.shields.io/badge/MAE-powered-green?style=flat&labelColor=555)](.)
+[![tools](https://img.shields.io/badge/tools-OpenCLI-orange?style=flat&labelColor=555)](.)
+[![tier0](https://img.shields.io/badge/tier0-zero--cost-purple?style=flat&labelColor=555)](.)
+[![license](https://img.shields.io/badge/license-MIT-lightgrey?style=flat&labelColor=555)](LICENSE)
 
-[![schedule](https://img.shields.io/badge/schedule-Mon_Wed_Fri_6AM-blue?style=flat)](.) [![trends](https://img.shields.io/badge/output-market_signals-purple?style=flat)](.) [![status](https://img.shields.io/badge/status-always_on-brightgreen?style=flat)](.) [![company](https://img.shields.io/badge/company-DigiMinds-orange?style=flat)](.)
-
-[Overview](#overview) · [Sources](#sources) · [Signal Types](#signal-types) · [Output](#output) · [Tips](#tips)
-
----
-
-## 🧠 OVERVIEW
-
-Paperclip Trends Scanner fires three times a week (Mon/Wed/Fri at 6 AM) to scan macro market trends, platform algorithm changes, emerging ad formats, and economic signals affecting the PPC industry. Findings feed into the CEO loop and weekly strategy context.
-
-| Component | Value |
-|---|---|
-| Trigger | Mon/Wed/Fri 6:00 AM (LaunchAgent) |
-| Scope | Google Ads, Meta Ads, PPC industry, macro economy |
-| Output | Trends brief → Paperclip API → CEO loop |
-| Model | Gemini 2.0 Flash + Groq (zero Claude tokens) |
+[concepts](#concepts) · [architecture](#architecture) · [tips](#tips) · [startups](#startups) · [star](#star)
 
 ---
 
-## 🎯 SIGNAL TYPES TRACKED
+## 🧠 CONCEPTS <a id="concepts"></a>
 
-| Signal Category | Examples | Source |
+| Feature | Location | Description |
 |---|---|---|
-| Platform changes | Google Ads new features, Meta algorithm shift | Official blogs + Apify |
-| Industry trends | AI in PPC, automation wave, attribution changes | Google News |
-| Economic signals | Consumer spending, CPM/CPC macro trends | Industry reports |
-| Emerging formats | New ad format launches, placements | Platform blogs |
-| Regulatory | Privacy law changes affecting targeting | News API |
-| Competitor positioning | Industry shifting to Performance Max? | LinkedIn + intel |
+| [**Core Engine**](engine/) | `engine/` | Main orchestration loop — reads from Paperclip → executes → reports back |
+| [**Paperclip Sync**](sync/) | `sync/` | Bidirectional sync with Paperclip API at localhost:3100 |
+| [**MAE Integration**](mae/) | `mae/` | Routes tasks through MAE swarm — wave-batched, RAM-safe |
+| [**Tier 0 Routing**](routing/) | `routing/` | Tools used: OpenCLI · Groq · Deer Flow |
+| [**Output Storage**](outputs/) | `outputs/` | Results saved to `~/.claude/tcc-logs/` + synced to Paperclip |
+| [**LaunchAgent**](launchagents/) | `launchagents/` | Optional persistent LaunchAgent — runs engine on schedule |
+
+### 🔥 Hot
+
+| Feature | Location | Description |
+|---|---|---|
+| [**Zero-cost execution**](engine/) | `engine/` | All processing via Tier 0 models — Groq, Gemini, Kimi, Bytez |
+| [**Auto-retry**](engine/) | `engine/` | Failed tasks auto-retry with fallback model via TCC retry mechanism |
+| [**Paperclip goal sync**](sync/) | `sync/` | Reads outstanding goals from Paperclip every run cycle |
 
 ---
 
-## ⚙️ PIPELINE
+## ⚙️ ARCHITECTURE <a id="architecture"></a>
 
 ```
-Mon/Wed/Fri 6:00 AM
-    │
-    ├─► Fetch Google Ads blog + announcements (Apify)
-    ├─► Fetch Meta Business blog + Reels ads news (Apify)
-    ├─► Google News: "PPC 2025", "Google Ads update", "Meta ads"
-    ├─► Industry: Search Engine Land, Marketing Land RSS
-    │
-    ├─► Gemini Flash: summarize + extract actionable signals
-    ├─► Rank by impact score (High/Medium/Low for DigiMinds)
-    │
-    └─► POST /api/trends → stored + injected into next CEO loop
+Paperclip CEO Layer (localhost:3100)
+         │
+         │ reads goals + tasks
+         ▼
+    Trends Scanner Engine
+         │
+    MAE decompose
+         │
+    Tier 0 swarm (OpenCLI · Groq · Deer Flow)
+         │
+    synthesis + output
+         │
+         │ reports results
+         ▼
+Paperclip CEO Layer (updated goals)
 ```
 
+| Phase | Model | Purpose |
+|---|---|---|
+| Decompose | Groq llama-3.1-8b-instant | Break goal into sub-tasks |
+| Execute | OpenCLI + more | Run specialist tasks |
+| Synthesize | Groq llama-3.3-70b-versatile | Merge outputs |
+| Report | Paperclip API | Update goal status |
+
 ---
 
-## 💡 TIPS
+## 💡 TIPS AND TRICKS (8) <a id="tips"></a>
 
-■ **Signal Quality (4)**
+[engine-ops](#tips-ops) · [paperclip-integration](#tips-pc)
+
+<a id="tips-ops"></a>
+■ **Engine Operations (4)**
+
 | Tip | Source |
 |---|---|
-| Platform official blogs are ground truth — weight 3x over news articles | Intel SOP |
-| "Emerging" trends need 2+ sources before flagging as HIGH impact | Validation rule |
-| Mon scan is most important — covers weekend announcements | Schedule logic |
-| Economic signals (CPI, consumer confidence) affect client ad budgets | Strategy context |
+| Start: `python3 engine/main.py` or load LaunchAgent for persistent operation | [hmzainjamil](https://github.com/hmzainjamil) |
+| `mae run "goal"` triggers this engine via TCC routing when keyword matches | [hmzainjamil](https://github.com/hmzainjamil) |
+| All outputs go to `~/.claude/tcc-logs/mae-TIMESTAMP.md` — searchable history | [hmzainjamil](https://github.com/hmzainjamil) |
+| `tcc watch` monitors engine task queue in real-time — see active/pending/done | [hmzainjamil](https://github.com/hmzainjamil) |
 
-■ **Operations (3)**
+<a id="tips-pc"></a>
+■ **Paperclip Integration (4)**
+
 | Tip | Source |
 |---|---|
-| Latest trends at `/api/trends/latest` — always 3 days fresh | API ref |
-| CEO loop ingests trends automatically every 6h | CEO loop integration |
-| Manual scan: `~/.claude/bin/paperclip-trends-scanner` | CLI ref |
+| Paperclip must be running: `cd ~/installed-repos/paperclip && pnpm dev` | [Paperclip AI](https://github.com/paperclipai) |
+| Company ID `c5066522-bacc-4a28-b700-6590cbe366ec` scopes all API calls to DigiMinds | [hmzainjamil](https://github.com/hmzainjamil) |
+| Engine falls back to `llm-burst` if Paperclip API returns 404 | [hmzainjamil](https://github.com/hmzainjamil) |
+| Set engine goals via Paperclip dashboard → engine picks up on next run cycle | [Paperclip AI](https://github.com/paperclipai) |
 
 ---
 
-## ☠️ TOOLS REPLACED
+## ☠️ STARTUPS / BUSINESSES <a id="startups"></a>
 
-| Trends Scanner | Replaced |
+| Feature | Replaced |
 |---|---|
-| Market trend awareness | Occasional Twitter/LinkedIn browsing |
-| Platform update tracking | Missing Google Ads changes until client impacted |
-| Macro signal detection | Ignoring economic context entirely |
-| Strategic context for CEO | Flying blind on market shifts |
+| **Autonomous engine loop** | [AutoGPT](https://autogpt.net), [AgentGPT](https://agentgpt.reworkd.ai), [BabyAGI](https://github.com/yoheinakajima/babyagi) |
+| **Paperclip company OS** | [Notion AI](https://notion.so), [Monday.com](https://monday.com), [Asana](https://asana.com) |
+| **Zero-cost Tier 0 execution** | [CrewAI Cloud](https://crewai.com), [LangSmith](https://smith.langchain.com) |
+| **MAE swarm synthesis** | [LangGraph](https://langgraph.com), [AutoGen](https://github.com/microsoft/autogen) |
 
 ---
 
-*Part of [DigiMinds AI Agency Stack](https://github.com/hmzainjamil) — Paperclip autonomous trends intelligence*
+## Star History <a id="star"></a>
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hmzainjamil/hmz-paperclip-trends-scanner&type=Date)](https://star-history.com/#hmzainjamil/hmz-paperclip-trends-scanner&Date)

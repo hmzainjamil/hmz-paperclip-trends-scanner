@@ -1,88 +1,22 @@
 # HMZ Paperclip Trends Scanner
 
-> Trend discovery workflow concept for collecting external signals, comparing movement over time, and turning validated signals into structured research output.
+> **Status: concept only. No executable implementation is present on the default branch.**
 
-<p align="center"><a href="https://github.com/hmzainjamil/hmz-paperclip-trends-scanner">Repository</a> · <a href="https://github.com/hmzainjamil/hmz-paperclip-trends-scanner/commits/main">Commits</a> · <a href="https://github.com/hmzainjamil/hmz-paperclip-trends-scanner/issues">Issues</a></p>
+This README outlines a proposed process for collecting external signals, comparing them over time, and preparing research for human review. The current Git tree contains only this README; it has no collectors, parsers, model integration, schedule, report generator, dependency manifest, tests, or deployment configuration.
 
-<p align="center"><img alt="Visibility" src="https://img.shields.io/badge/visibility-public-blue"> <img alt="Lifecycle" src="https://img.shields.io/badge/lifecycle-active-success"> <img alt="Documentation" src="https://img.shields.io/badge/documentation-deep%20editorial-lightgrey"></p>
+## Proposed workflow
 
-<!-- HMZ DEEP README v1 -->
+1. Collect from identified public or authorized sources.
+2. Normalize and timestamp records.
+3. Compare observations and filter candidate signals.
+4. Prepare a structured report for human review.
 
-## At a glance
+This is a design outline, not a running scanner. The repository does not implement the Monday/Wednesday/Friday schedule stated in its GitHub description.
 
-| Field | Current state |
-|---|---|
-| Visibility | public |
-| Lifecycle | Active |
-| Repository size | 17 KB |
-| Default branch | main |
-| Evidence basis | Current repository documentation and source-visible material |
+## Use and configuration
 
-## Why this exists
+No installation, runtime, or configuration command is supported by tracked files. Do not connect external sources or downstream systems based on this concept document.
 
-Trend discovery workflow concept for collecting external signals, comparing movement over time, and turning validated signals into structured research output.
+## Evidence and limits
 
-This README separates documented capabilities from measured evidence and avoids converting roadmap ideas or external assumptions into implementation claims.
-
-## Scope
-
-The repository documentation is the primary description available for this project. Verify implementation claims against the source tree and CI.
-
-## Intended architecture
-
-```text
-Public / connected sources
-          |
-          v
-      Collection
-          |
-          v
-  Normalize + timestamp
-          |
-          v
-   Compare / aggregate
-          |
-          v
-     Signal filtering
-          |
-          v
- Model-assisted synthesis
-          |
-          v
- Structured trend report
-          |
-          v
-Human review / downstream workflow
-```
-
-## Getting started
-
-No verified installation procedure was available in the current README. Use the repository root, dependency manifests, and project docs as the source of truth.
-
-## Usage
-
-No verified runtime command was available in the current README. Commands should be taken from executable entry points and package configuration.
-
-## Configuration
-
-Configuration should be taken from environment examples, package configuration, and runtime entry points. Secrets should never be committed.
-
-## Security and data quality
-
-External data should be considered untrusted. Record source URLs or identifiers, collection timestamps, parser versions, and transformation steps. Rate limits and source terms should be respected.
-
-## Security and data quality
-
-External data should be considered untrusted. Record source URLs or identifiers, collection timestamps, parser versions, and transformation steps. Rate limits and source terms should be respected.
-
-## Limitations
-
-- Planned functionality is not presented as completed functionality.
-- Quantitative claims should be backed by reproducible repository evidence.
-- External provider behavior, limits, and pricing are not inferred from repository documentation.
-
-
-
-## Maintainer
-
-[hmzainjamil](https://github.com/hmzainjamil)
+No source execution, tests, integrations, or deployment checks were possible. GitHub identifies this repository as public and not as a fork; no license or upstream-source record appears in the current tree. Do not infer an operating service, data coverage, or reuse license from the project name or README.
